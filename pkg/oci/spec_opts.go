@@ -1601,7 +1601,7 @@ func WithPidsLimit(limit int64) SpecOpts {
 		if s.Linux.Resources.Pids == nil {
 			s.Linux.Resources.Pids = &specs.LinuxPids{}
 		}
-		s.Linux.Resources.Pids.Limit = limit
+		s.Linux.Resources.Pids.Limit = &limit
 		return nil
 	}
 }
@@ -1707,6 +1707,23 @@ func WithRdt(closID, l3CacheSchema, memBwSchema string) SpecOpts {
 			L3CacheSchema: l3CacheSchema,
 			MemBwSchema:   memBwSchema,
 		}
+		return nil
+	}
+}
+
+func WithRlimit(rlimit *specs.POSIXRlimit) SpecOpts {
+	return func(_ context.Context, _ Client, _ *containers.Container, s *Spec) error {
+		setProcess(s)
+		if s.Process.Rlimits == nil {
+			s.Process.Rlimits = make([]specs.POSIXRlimit, 0)
+		}
+		for i := range s.Process.Rlimits {
+			if s.Process.Rlimits[i].Type == rlimit.Type {
+				s.Process.Rlimits[i] = *rlimit
+				return nil
+			}
+		}
+		s.Process.Rlimits = append(s.Process.Rlimits, *rlimit)
 		return nil
 	}
 }

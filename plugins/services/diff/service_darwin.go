@@ -1,8 +1,5 @@
-//go:build !windows && !darwin
-// +build !windows,!darwin
-
 /*
-   Copyright © 2021 The CDI Authors
+   Copyright The containerd Authors.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,10 +14,9 @@
    limitations under the License.
 */
 
-package cdi
+package diff
 
-import "syscall"
-
-func osSync() {
-	syscall.Sync()
+var defaultDifferConfig = &config{
+	Order:  []string{"erofs", "walking"},
+	SyncFs: false,
 }

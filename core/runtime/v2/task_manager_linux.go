@@ -1,8 +1,5 @@
-//go:build darwin
-// +build darwin
-
 /*
-   Copyright © 2021 The CDI Authors
+   Copyright The containerd Authors.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,10 +14,18 @@
    limitations under the License.
 */
 
-package cdi
+package v2
 
-import "syscall"
+import (
+	"context"
 
-func osSync() {
-	_ = syscall.Sync()
+	"github.com/containerd/cgroups/v3"
+	"github.com/containerd/containerd/v2/pkg/deprecation"
+	"github.com/containerd/containerd/v2/plugins/services/warning"
+)
+
+func emitPlatformWarnings(ctx context.Context, warnings warning.Service) {
+	if cgroups.Mode() != cgroups.Unified {
+		warnings.Emit(ctx, deprecation.CgroupV1)
+	}
 }
